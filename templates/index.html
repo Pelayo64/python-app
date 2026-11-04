@@ -4,97 +4,215 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conversor de Divisas</title>
+    <!-- Bootstrap para componentes y layout -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Fuente Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
     <style>
         body {
-            /* Cambio de colores a tonos oscuros y nueva tipografía */
-            background: linear-gradient(135deg, #232526, #414345);
-            font-family: 'Helvetica Neue', Arial, sans-serif;
             margin: 0;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            min-height: 100vh;
+            /* Fusión: Cambio de colores a tonos oscuros */
+            background: linear-gradient(135deg, #232526, #414345);
         }
+
+        /* Diseño de la barra lateral (Sidebar) */
+        .sidebar {
+            width: 280px;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            padding: 30px 20px;
+            z-index: 10;
+        }
+
+        .sidebar-logo-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .sidebar-logo {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .nav-link {
+            color: #1e3c72;
+            font-weight: 600;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: #1e3c72;
+            color: #ffffff;
+        }
+
+        /* Contenedor principal donde va la tarjeta */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Tarjeta del conversor (Fusión) */
         .converter-card {
             border-radius: 15px;
+            backdrop-filter: blur(10px);
             background: rgba(255, 255, 255, 0.90);
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            /* Diseño responsive: usamos % en lugar de px fijos */
+            border: none;
             width: 100%;
             max-width: 500px;
         }
-        /* Estilos para la caja de resultado que faltaban en el CSS */
+
         .result-box {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #232526;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #198754;
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 12px;
         }
-        /* Ajuste responsive para pantallas pequeñas (móviles) */
+
+        .error-box {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        /* Fusión: Ajuste responsive para pantallas pequeñas (móviles) */
         @media (max-width: 576px) {
-            .converter-card {
-                padding: 1.5rem !important; /* Reduce el padding interior */
+            body {
+                flex-direction: column;
             }
-            .row { 
+            .sidebar {
+                width: 100%;
+                padding: 15px;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            }
+            .sidebar-logo-container {
+                margin-bottom: 0;
+                display: flex;
+                align-items: center;
+            }
+            .sidebar-logo {
+                width: 50px;
+                height: 50px;
+                margin-bottom: 0;
+                margin-right: 15px;
+            }
+            .sidebar .d-flex.flex-column {
+                display: none !important; /* Oculta enlaces en móvil para simplificar el header */
+            }
+            .converter-card {
+                padding: 1.5rem !important;
+            }
+            .row-responsive { 
                 flex-direction: column; 
             }
-            .col { 
+            .col-responsive { 
                 margin-bottom: 10px; 
+                width: 100%;
             }
             .arrow-col {
-                transform: rotate(90deg); /* Gira la flecha hacia abajo en móviles */
-                margin: 5px 0;
+                transform: rotate(90deg); 
+                margin: 10px 0;
             }
         }
     </style>
 </head>
+<body>
 
-<!-- Añadimos p-3 para asegurar que en móviles la tarjeta no se pegue a los bordes de la pantalla -->
-<body class="d-flex justify-content-center align-items-center vh-100 p-3">
+    <!-- BARRA LATERAL -->
+    <nav class="sidebar">
+        <div class="sidebar-logo-container">
+            <img src="currency-symbol.png" alt="Logo Divisas" class="sidebar-logo">
+            <h4 style="color: #1e3c72; font-weight: 600; margin: 0;">MiApp Divisas</h4>
+        </div>
+        
+        <div class="d-flex flex-column">
+            <a href="#" class="nav-link active text-decoration-none">💱 Conversor</a>
+            <a href="#" class="nav-link text-decoration-none">Tasas de Cambio</a>
+            <a href="#" class="nav-link text-decoration-none">Contacto</a>
+        </div>
+    </nav>
 
-    <!-- ELIMINADO el style="width: 400px;" que rompía la adaptabilidad -->
-    <div class="card shadow-lg p-4 converter-card">
-        <h2 class="text-center mb-4">💱 Conversor de Divisas</h2>
-
-        <form method="post">
-            <div class="mb-3">
-                <label class="form-label text-dark fw-bold">Cantidad</label>
-                <input type="number" step="0.01" name="amount" 
-                       class="form-control form-control-lg" 
-                       placeholder="Introduce cantidad" required>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col">
-                    <select name="from_currency" class="form-select">
-                        <option value="EUR">EUR €</option>
-                        <option value="USD">USD $</option>
-                        <option value="GBP">GBP £</option>
-                    </select>
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        <div class="card shadow-lg p-4 converter-card">
+            <h2 class="text-center mb-4" style="color: #1e3c72; font-weight: 600;">Calculadora</h2>
+            
+            <form method="post">
+                <div class="mb-4">
+                    <label class="form-label text-dark fw-bold">Cantidad</label>
+                    <input type="number" step="0.01" name="amount" class="form-control form-control-lg" placeholder="Ej. 100.50" required>
                 </div>
-                <!-- Añadida la clase arrow-col para controlarla en móviles -->
-                <div class="col text-center align-self-center arrow-col fs-4 fw-bold text-dark">
-                    →
+                
+                <div class="row mb-4 align-items-center row-responsive">
+                    <div class="col-5 col-responsive">
+                        <label class="form-label text-dark fw-bold">De</label>
+                        <select name="from_currency" class="form-select form-select-lg">
+                            <option value="EUR">EUR €</option>
+                            <option value="USD">USD $</option>
+                            <option value="GBP">GBP £</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-2 text-center arrow-col">
+                        <span style="font-size: 1.5rem; color: #1e3c72; font-weight: bold;">→</span>
+                    </div>
+                    
+                    <div class="col-5 col-responsive">
+                        <label class="form-label text-dark fw-bold">A</label>
+                        <select name="to_currency" class="form-select form-select-lg">
+                            <option value="USD">USD $</option>
+                            <option value="EUR">EUR €</option>
+                            <option value="GBP">GBP £</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="col">
-                    <select name="to_currency" class="form-select">
-                        <option value="USD">USD $</option>
-                        <option value="EUR">EUR €</option>
-                        <option value="GBP">GBP £</option>
-                    </select>
+                
+                <div class="d-grid mt-2">
+                    <button type="submit" class="btn btn-lg text-white fw-bold" style="background-color: #232526; border: none; border-radius: 10px;">
+                        Convertir Ahora
+                    </button>
                 </div>
-            </div>
+            </form>
 
-            <div class="d-grid">
-                <!-- Botón adaptado al nuevo esquema de colores oscuro -->
-                <button type="submit" class="btn btn-lg text-white" style="background-color: #232526;">
-                    Convertir
-                </button>
-            </div>
-        </form>
+            <!-- Bloque para mostrar errores desde Flask -->
+            {% if error %}
+                <div class="mt-4 text-center error-box">
+                    {{ error }}
+                </div>
+            {% endif %}
 
-        {% if result is not none %}
-            <div class="mt-4 text-center result-box">
-                {{ result }}
-            </div>
-        {% endif %}
-    </div>
+            <!-- Bloque para mostrar el resultado -->
+            {% if result is not none %}
+                <div class="mt-4 text-center result-box">
+                    {{ result }}
+                </div>
+            {% endif %}
+        </div>
+    </main>
 
 </body>
 </html>
